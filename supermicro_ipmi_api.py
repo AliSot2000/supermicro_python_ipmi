@@ -165,3 +165,19 @@ def power_cycle(logout_after: bool = False):
 
     if logout_after:
         logout()
+
+def get_power_status(logout_after: bool = False):
+    power = None
+    if not logged_in:
+        login()
+
+    _get_power_status = session.request("POST", impi_url, data={"POWER_INFO.XML": "0, 0"})
+
+    if _get_power_status.ok:
+        et = ET.fromstring(_get_power_status.content)
+        power = et.find("POWER_INFO").find("POWER").get("STATUS")
+
+    if logout_after:
+        logout()
+
+    return power
